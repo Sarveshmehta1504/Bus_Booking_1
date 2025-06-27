@@ -1,0 +1,657 @@
+<?php
+session_start();
+
+// Handle contact form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+    $subject = $_POST['subject'] ?? '';
+    $message = trim($_POST['message'] ?? '');
+    
+    // Basic validation
+    $errors = [];
+    
+    if (empty($name)) {
+        $errors[] = "Name is required";
+    }
+    
+    if (empty($email)) {
+        $errors[] = "Email is required";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Valid email is required";
+    }
+    
+    if (empty($subject)) {
+        $errors[] = "Subject is required";
+    }
+    
+    if (empty($message)) {
+        $errors[] = "Message is required";
+    }
+    
+    if (empty($errors)) {
+        // In a real application, you would:
+        // 1. Save to database
+        // 2. Send email to support team
+        // 3. Send confirmation email to user
+        
+        // For now, we'll simulate successful submission
+        $contact_data = [
+            'name' => $name,
+            'email' => $email,
+            'phone' => $phone,
+            'subject' => $subject,
+            'message' => $message,
+            'submitted_at' => date('Y-m-d H:i:s'),
+            'ticket_id' => 'TKT-' . strtoupper(uniqid())
+        ];
+        
+        // Store in session for demo purposes
+        $_SESSION['contact_submission'] = $contact_data;
+        
+        // Set success message
+        $_SESSION['contact_success'] = "Thank you for contacting us! Your ticket ID is: " . $contact_data['ticket_id'] . ". We'll get back to you within 24 hours.";
+        
+        // Redirect to prevent form resubmission
+        header('Location: contact.php?success=1');
+        exit();
+    } else {
+        $_SESSION['contact_errors'] = $errors;
+        $_SESSION['contact_form_data'] = $_POST;
+    }
+}
+
+// Check for success message
+$success_message = '';
+if (isset($_GET['success']) && isset($_SESSION['contact_success'])) {
+    $success_message = $_SESSION['contact_success'];
+    unset($_SESSION['contact_success']);
+}
+
+// Get errors and form data
+$errors = $_SESSION['contact_errors'] ?? [];
+$form_data = $_SESSION['contact_form_data'] ?? [];
+unset($_SESSION['contact_errors'], $_SESSION['contact_form_data']);
+
+// Contact information
+$contact_info = [
+    'phone' => '+91 1800-123-4567',
+    'email' => 'support@busgo.com',
+    'address' => '123 Travel Street, Mumbai, Maharashtra 400001',
+    'emergency' => '+91 9876-543-210'
+];
+
+// FAQ data
+$faqs = [
+    [
+        'question' => 'How can I cancel my ticket?',
+        'answer' => 'You can cancel your ticket online through our website or mobile app. Cancellation charges may apply based on timing.'
+    ],
+    [
+        'question' => 'When will I receive my refund?',
+        'answer' => 'Refunds are processed within 7-10 business days after cancellation, depending on your payment method.'
+    ],
+    [
+        'question' => 'Can I modify my booking?',
+        'answer' => 'Yes, you can modify your booking subject to seat availability and fare difference. Modification charges may apply.'
+    ],
+    [
+        'question' => 'What if my bus is delayed?',
+        'answer' => 'We provide real-time updates via SMS and email. In case of significant delays, you\'re eligible for compensation.'
+    ]
+];
+
+// If it's an AJAX request, return JSON
+if (isset($_GET['action']) && $_GET['action'] === 'get_contact_info') {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'contact_info' => $contact_info,
+        'faqs' => $faqs
+    ]);
+    exit();
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact BusGo - We're Here to Help</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .logo i {
+            margin-right: 0.5rem;
+            font-size: 2rem;
+        }
+        
+        .nav {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav a:hover {
+            color: #ffd700;
+        }
+        
+        .content {
+            padding: 5rem 0;
+        }
+        
+        .hero-section {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .hero-section h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .hero-section p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+        
+        .contact-form {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .contact-form h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .contact-info {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .contact-info h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .contact-item i {
+            font-size: 1.5rem;
+            color: #667eea;
+            margin-right: 1rem;
+            width: 30px;
+        }
+        
+        .contact-item div h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+            color: #333;
+        }
+        
+        .contact-item div p {
+            color: #666;
+            margin: 0;
+        }
+        
+        .support-hours {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .support-hours h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .support-hours p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .faq-section {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+        }
+        
+        .faq-section h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+        
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .faq-item {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .faq-item h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .faq-item p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #ffd700;
+        }
+        
+        .footer-section p, .footer-section a {
+            color: #ecf0f1;
+            text-decoration: none;
+            line-height: 1.8;
+        }
+        
+        .footer-section a:hover {
+            color: #ffd700;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-icons a {
+            background: #34495e;
+            padding: 0.8rem;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            background: #667eea;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #34495e;
+            color: #bdc3c7;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-bus"></i>
+                    BusGo
+                </div>
+                <nav class="nav">
+                    <a href="index.php">Home</a>
+                    <a href="product.php">Routes</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.php">Contact</a>
+                    <a href="login.php"><i class="fas fa-user"></i> Login</a>
+                    <a href="bookings.php"><i class="fas fa-ticket-alt"></i> My Bookings</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content">
+        <div class="container">
+            <!-- Hero Section -->
+            <div class="hero-section">
+                <h1>Contact Us</h1>
+                <p>Need help with your booking or have questions about our services? We're here to assist you 24/7.</p>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <?php if ($success_message): ?>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($success_message); ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($errors)): ?>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <?php foreach ($errors as $error): ?>
+                            <li><?php echo htmlspecialchars($error); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+
+            <!-- Contact Grid -->
+            <div class="contact-grid">
+                <!-- Contact Form -->
+                <div class="contact-form">
+                    <h2>Send us a Message</h2>
+                    <form method="POST" action="">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($form_data['name'] ?? ''); ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($form_data['email'] ?? ''); ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" value="<?php echo htmlspecialchars($form_data['phone'] ?? ''); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <select id="subject" name="subject" required>
+                                <option value="">Select a topic</option>
+                                <option value="booking" <?php echo (($form_data['subject'] ?? '') === 'booking') ? 'selected' : ''; ?>>Booking Issues</option>
+                                <option value="cancellation" <?php echo (($form_data['subject'] ?? '') === 'cancellation') ? 'selected' : ''; ?>>Cancellation & Refunds</option>
+                                <option value="payment" <?php echo (($form_data['subject'] ?? '') === 'payment') ? 'selected' : ''; ?>>Payment Problems</option>
+                                <option value="routes" <?php echo (($form_data['subject'] ?? '') === 'routes') ? 'selected' : ''; ?>>Route Information</option>
+                                <option value="feedback" <?php echo (($form_data['subject'] ?? '') === 'feedback') ? 'selected' : ''; ?>>Feedback & Suggestions</option>
+                                <option value="other" <?php echo (($form_data['subject'] ?? '') === 'other') ? 'selected' : ''; ?>>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" placeholder="Please describe your query in detail..." required><?php echo htmlspecialchars($form_data['message'] ?? ''); ?></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="contact-info">
+                    <h2>Get in Touch</h2>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h3>Customer Support</h3>
+                            <p><?php echo htmlspecialchars($contact_info['phone']); ?></p>
+                            <p>Available 24/7</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h3>Email Support</h3>
+                            <p><?php echo htmlspecialchars($contact_info['email']); ?></p>
+                            <p>Response within 2 hours</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h3>Office Address</h3>
+                            <p><?php echo htmlspecialchars($contact_info['address']); ?></p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-comments"></i>
+                        <div>
+                            <h3>Live Chat</h3>
+                            <p>Available on website</p>
+                            <p>24/7 instant support</p>
+                        </div>
+                    </div>
+
+                    <div class="support-hours">
+                        <h3>Emergency Support</h3>
+                        <p>For urgent travel assistance</p>
+                        <p><strong><?php echo htmlspecialchars($contact_info['emergency']); ?></strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="faq-section">
+                <h2>Frequently Asked Questions</h2>
+                <div class="faq-grid">
+                    <?php foreach ($faqs as $faq): ?>
+                    <div class="faq-item">
+                        <h4><?php echo htmlspecialchars($faq['question']); ?></h4>
+                        <p><?php echo htmlspecialchars($faq['answer']); ?></p>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>BusGo</h4>
+                    <p>Your trusted travel partner for comfortable and affordable bus journeys across the country.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="index.php">Home</a>
+                    <a href="product.php">Routes</a>
+                    <a href="about.html">About Us</a>
+                    <a href="contact.php">Contact</a>
+                    <a href="#">Help & Support</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <a href="#">Bus Booking</a>
+                    <a href="#">Route Planning</a>
+                    <a href="#">Group Booking</a>
+                    <a href="#">Corporate Services</a>
+                    <a href="#">Travel Insurance</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p><i class="fas fa-phone"></i> <?php echo htmlspecialchars($contact_info['phone']); ?></p>
+                    <p><i class="fas fa-envelope"></i> <?php echo htmlspecialchars($contact_info['email']); ?></p>
+                    <p><i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars($contact_info['address']); ?></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 BusGo. All rights reserved. | Privacy Policy | Terms & Conditions</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

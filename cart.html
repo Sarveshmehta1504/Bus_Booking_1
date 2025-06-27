@@ -1,0 +1,486 @@
+<html>
+<head>
+    <title>BusGo - My Bookings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+        
+        .logo i {
+            font-size: 2rem;
+            color: #3b82f6;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #1f2937;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            background: #3b82f6;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .nav-links .cart-icon {
+            position: relative;
+            background: #3b82f6;
+            color: white;
+            padding: 0.7rem;
+            border-radius: 50%;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+        
+        .bookings-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .booking-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        
+        .booking-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .route-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .route-arrow {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .booking-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .status-confirmed {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .booking-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .detail-item i {
+            color: #3b82f6;
+            width: 20px;
+        }
+        
+        .booking-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .empty-cart {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+        
+        .empty-cart i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #d1d5db;
+        }
+        
+        .empty-cart h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .booking-summary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .booking-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            
+            .booking-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-bus"></i>
+                <span>BusGo</span>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.php">Home</a></li>
+                    <li><a href="product.php">Routes</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.php">Contact</a></li>
+                    <li><a href="login.php"><i class="fas fa-user"></i></a></li>
+                    <li><a href="bookings.php" class="cart-icon"><i class="fas fa-ticket-alt"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="page-header">
+            <h1>My Bookings</h1>
+            <p>Review and manage your bus ticket bookings</p>
+        </div>
+
+        <div class="bookings-container" id="bookingsContainer">
+            <!-- Bookings will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        // Load bookings from session/localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBookings();
+        });
+
+        function loadBookings() {
+            // Try to get bookings from session first, then localStorage as fallback
+            fetch('cart.php')
+                .then(response => response.json())
+                .then(bookings => {
+                    displayBookings(bookings);
+                })
+                .catch(error => {
+                    console.error('Error loading bookings:', error);
+                    // Fallback to localStorage
+                    const localBookings = JSON.parse(localStorage.getItem('busBookings') || '[]');
+                    displayBookings(localBookings);
+                });
+        }
+
+        function displayBookings(bookings) {
+            const container = document.getElementById('bookingsContainer');
+            
+            if (!bookings || bookings.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-ticket-alt"></i>
+                        <h3>No bookings yet</h3>
+                        <p>Start planning your journey and book your first bus ticket!</p>
+                        <a href="product.php" class="btn btn-primary">
+                            <i class="fas fa-search"></i>
+                            Search Routes
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            let totalAmount = 0;
+            let bookingsHTML = '';
+
+            bookings.forEach((booking, index) => {
+                const bookingDate = new Date(booking.booking_date || Date.now());
+                const departureTime = booking.departure_time || '08:00';
+                const arrivalTime = booking.arrival_time || '12:00';
+                const price = parseFloat(booking.price || booking.total_price || 0);
+                totalAmount += price;
+
+                bookingsHTML += `
+                    <div class="booking-card">
+                        <div class="booking-header">
+                            <div class="route-info">
+                                <div class="route-arrow">
+                                    <span>${booking.from || booking.departure}</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                    <span>${booking.to || booking.destination}</span>
+                                </div>
+                            </div>
+                            <div class="booking-status status-confirmed">
+                                <i class="fas fa-check-circle"></i>
+                                Confirmed
+                            </div>
+                        </div>
+                        
+                        <div class="booking-details">
+                            <div class="detail-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>Date: ${bookingDate.toLocaleDateString()}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-clock"></i>
+                                <span>Departure: ${departureTime}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-clock"></i>
+                                <span>Arrival: ${arrivalTime}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-users"></i>
+                                <span>Passengers: ${booking.passengers || 1}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span>Price: $${price.toFixed(2)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-bus"></i>
+                                <span>Bus: ${booking.bus_type || 'Standard'}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="booking-actions">
+                            <button class="btn btn-secondary" onclick="cancelBooking(${index})">
+                                <i class="fas fa-times"></i>
+                                Cancel
+                            </button>
+                            <button class="btn btn-primary" onclick="downloadTicket(${index})">
+                                <i class="fas fa-download"></i>
+                                Download Ticket
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            bookingsHTML += `
+                <div class="booking-summary">
+                    <h3 style="margin-bottom: 1rem;">Booking Summary</h3>
+                    <div class="summary-row">
+                        <span>Total Bookings:</span>
+                        <span>${bookings.length}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Service Fee:</span>
+                        <span>$${(totalAmount * 0.05).toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row summary-total">
+                        <span>Total Amount:</span>
+                        <span>$${(totalAmount + totalAmount * 0.05).toFixed(2)}</span>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn btn-primary" onclick="proceedToPayment()" style="width: 100%;">
+                            <i class="fas fa-credit-card"></i>
+                            Proceed to Payment
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = bookingsHTML;
+        }
+
+        function cancelBooking(index) {
+            if (confirm('Are you sure you want to cancel this booking?')) {
+                // Remove booking from session/localStorage
+                fetch('cart.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'cancel',
+                        index: index
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        loadBookings(); // Reload bookings
+                        alert('Booking cancelled successfully!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error cancelling booking:', error);
+                    // Fallback to localStorage
+                    const bookings = JSON.parse(localStorage.getItem('busBookings') || '[]');
+                    bookings.splice(index, 1);
+                    localStorage.setItem('busBookings', JSON.stringify(bookings));
+                    loadBookings();
+                    alert('Booking cancelled successfully!');
+                });
+            }
+        }
+
+        function downloadTicket(index) {
+            alert('Ticket download feature will be implemented soon!');
+        }
+
+        function proceedToPayment() {
+            alert('Payment integration will be implemented soon!');
+        }
+    </script>
+</body>
+</html>

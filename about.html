@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About BusGo - Your Travel Partner</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .logo i {
+            margin-right: 0.5rem;
+            font-size: 2rem;
+        }
+        
+        .nav {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav a:hover {
+            color: #ffd700;
+        }
+        
+        .content {
+            padding: 5rem 0;
+            background: #f8f9fa;
+        }
+        
+        .hero-section {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .hero-section h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .hero-section p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+        
+        .about-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .about-card i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .about-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .about-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .mission-section {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+        }
+        
+        .mission-section h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+        
+        .mission-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        
+        .commitments {
+            list-style: none;
+        }
+        
+        .commitments li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .commitments li i {
+            color: #667eea;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .stats-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-item h3 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-item p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #ffd700;
+        }
+        
+        .footer-section p, .footer-section a {
+            color: #ecf0f1;
+            text-decoration: none;
+            line-height: 1.8;
+        }
+        
+        .footer-section a:hover {
+            color: #ffd700;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-icons a {
+            background: #34495e;
+            padding: 0.8rem;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            background: #667eea;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #34495e;
+            color: #bdc3c7;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .mission-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-bus"></i>
+                    BusGo
+                </div>
+                <nav class="nav">
+                    <a href="index.php">Home</a>
+                    <a href="product.php">Routes</a>
+                    <a href="about.html">About</a>
+                    <a href="contact.php">Contact</a>
+                    <a href="login.php"><i class="fas fa-user"></i> Login</a>
+                    <a href="bookings.php"><i class="fas fa-ticket-alt"></i> My Bookings</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content">
+        <div class="container">
+            <!-- Hero Section -->
+            <div class="hero-section">
+                <h1>About BusGo</h1>
+                <p>We are India's leading bus booking platform, connecting millions of travelers with comfortable, reliable, and affordable bus services across the country. Our mission is to make bus travel simple, safe, and enjoyable for everyone.</p>
+            </div>
+
+            <!-- About Cards -->
+            <div class="about-grid">
+                <div class="about-card">
+                    <i class="fas fa-history"></i>
+                    <h3>Our Journey</h3>
+                    <p>Founded in 2018, BusGo has grown from a small startup to India's most trusted bus booking platform, serving over 10 million customers annually.</p>
+                </div>
+                <div class="about-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Our Team</h3>
+                    <p>We have a dedicated team of travel experts, technology specialists, and customer service professionals working 24/7 to ensure your journey is perfect.</p>
+                </div>
+                <div class="about-card">
+                    <i class="fas fa-globe"></i>
+                    <h3>Our Reach</h3>
+                    <p>With connections to over 2000+ cities and partnerships with 500+ bus operators, we provide the most comprehensive bus network in India.</p>
+                </div>
+            </div>
+
+            <!-- Mission Section -->
+            <div class="mission-section">
+                <h2>Our Mission & Values</h2>
+                <div class="mission-content">
+                    <div>
+                        <p style="font-size: 1.1rem; line-height: 1.8; color: #666;">
+                            At BusGo, we believe that travel should be accessible, comfortable, and affordable for everyone. 
+                            We are committed to revolutionizing the bus travel experience in India by leveraging technology 
+                            and maintaining the highest standards of service quality.
+                        </p>
+                    </div>
+                    <div>
+                        <ul class="commitments">
+                            <li><i class="fas fa-check-circle"></i> Safety: Ensuring secure and safe journeys</li>
+                            <li><i class="fas fa-check-circle"></i> Reliability: On-time departures and arrivals</li>
+                            <li><i class="fas fa-check-circle"></i> Comfort: Modern buses with premium amenities</li>
+                            <li><i class="fas fa-check-circle"></i> Affordability: Best prices in the market</li>
+                            <li><i class="fas fa-check-circle"></i> Innovation: Cutting-edge booking technology</li>
+                            <li><i class="fas fa-check-circle"></i> Support: 24/7 customer assistance</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="stats-section">
+                <h2>Our Impact in Numbers</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <h3>10M+</h3>
+                        <p>Happy Customers</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>2000+</h3>
+                        <p>Cities Connected</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>500+</h3>
+                        <p>Bus Partners</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>99.5%</h3>
+                        <p>Customer Satisfaction</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>BusGo</h4>
+                    <p>Your trusted travel partner for comfortable and affordable bus journeys across the country.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="index.php">Home</a>
+                    <a href="product.php">Routes</a>
+                    <a href="about.html">About Us</a>
+                    <a href="contact.php">Contact</a>
+                    <a href="#">Help & Support</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <a href="#">Bus Booking</a>
+                    <a href="#">Route Planning</a>
+                    <a href="#">Group Booking</a>
+                    <a href="#">Corporate Services</a>
+                    <a href="#">Travel Insurance</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p><i class="fas fa-phone"></i> +91 1800-123-4567</p>
+                    <p><i class="fas fa-envelope"></i> support@busgo.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> 123 Travel Street, Mumbai, India</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 BusGo. All rights reserved. | Privacy Policy | Terms & Conditions</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
