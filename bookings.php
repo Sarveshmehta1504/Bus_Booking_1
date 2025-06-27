@@ -208,8 +208,8 @@ function renderBookingsPage() {
     include 'bookings_template.php';
 }
 
-// If this file is accessed directly without any parameters, show the full page
-if (!isset($_GET['api']) && $_SERVER['REQUEST_METHOD'] === 'GET') {
-    renderBookingsPage();
-}
+// This was causing duplicate content - the renderBookingsPage is already called in the switch statement above
+// if (!isset($_GET['api']) && $_SERVER['REQUEST_METHOD'] === 'GET') {
+//     renderBookingsPage();
+// }
 ?>
