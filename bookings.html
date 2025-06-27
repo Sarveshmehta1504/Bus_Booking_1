@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BusGo - My Bookings</title>
+    <script>
+        // Redirect to PHP version immediately
+        window.location.href = 'bookings.php';
+    </script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="styles.css">
     <style>
-        .bookings-container {
-            margin-top: 80px;
-            padding: 2rem 0;
-            min-height: calc(100vh - 80px);
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
 
@@ -279,57 +283,12 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-bus"></i>
-                    BusGo
-                </div>
-                <nav class="nav">
-                    <a href="index.php">Home</a>
-                    <a href="product.php">Routes</a>
-                    <a href="about.html">About</a>
-                    <a href="contact.php">Contact</a>
-                    <a href="login.html"><i class="fas fa-user"></i> Login</a>
-                    <a href="bookings.php" class="active"><i class="fas fa-ticket-alt"></i> My Bookings</a>
-                </nav>
-            </div>
-        </div>
-    </header>
-
-    <!-- Bookings Container -->
-    <div class="bookings-container">
-        <div class="container">
-            <!-- Bookings Header -->
-            <div class="bookings-header">
-                <h1><i class="fas fa-ticket-alt"></i> My Bookings</h1>
-                <p>Manage your bus reservations and travel history</p>
-            </div>
-
-            <!-- Booking Summary -->
-            <div class="booking-summary">
-                <div class="summary-stats">
-                    <div class="stat-item">
-                        <div class="stat-number" id="totalBookings">0</div>
-                        <div class="stat-label">Total Bookings</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number" id="upcomingTrips">0</div>
-                        <div class="stat-label">Upcoming Trips</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number" id="totalSpent">₹0</div>
-                        <div class="stat-label">Total Spent</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bookings Content -->
-            <div class="bookings-content" id="bookingsContainer">
-                <!-- Bookings will be loaded here -->
-            </div>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; text-align: center;">
+        <div>
+            <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: #3b82f6; margin-bottom: 1rem;"></i>
+            <h1>Redirecting to My Bookings</h1>
+            <p>Please wait, you will be redirected to the bookings page automatically.</p>
+            <p>If you are not redirected, <a href="bookings.php" style="color: #3b82f6; font-weight: bold;">click here</a>.</p>
         </div>
     </div>
 
@@ -379,32 +338,17 @@
     </footer>
 
     <script>
-        // Load bookings when page loads
+        // Redirect to the PHP version
         document.addEventListener('DOMContentLoaded', function() {
-            loadBookings();
+            window.location.href = 'bookings.php';
         });
-
-        async function loadBookings() {
-            try {
-                const response = await fetch('bookings.php');
-                const data = await response.json();
-                
-                if (data.success) {
-                    displayBookings(data.bookings);
-                    updateSummaryStats(data.bookings);
-                } else {
-                    console.error('Error loading bookings:', data.error);
-                    showEmptyState();
-                }
-            } catch (error) {
-                console.error('Error fetching bookings:', error);
-                showEmptyState();
-            }
-        }
 
         function displayBookings(bookings) {
             const container = document.getElementById('bookingsContainer');
             
+            // Clear the container to prevent duplicate content
+            container.innerHTML = '';
+
             if (!bookings || bookings.length === 0) {
                 showEmptyState();
                 return;

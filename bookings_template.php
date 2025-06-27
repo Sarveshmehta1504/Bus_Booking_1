@@ -377,67 +377,86 @@
                     </div>
                 <?php else: ?>
                     <?php foreach ($bookings as $index => $booking): ?>
+                        <?php
+                            // Ensure all required keys have default values to prevent warnings
+                            $id = $booking['id'] ?? 'Unknown';
+                            $from = $booking['from'] ?? 'Unknown';
+                            $to = $booking['to'] ?? 'Unknown';
+                            $departure_date = $booking['departure_date'] ?? '1970-01-01';
+                            $departure_time = $booking['departure_time'] ?? '06:00';
+                            $arrival_time = $booking['arrival_time'] ?? 'N/A';
+                            $bus_type = $booking['bus_type'] ?? 'Standard';
+                            $price = $booking['price'] ?? 0;
+                            $passengers = $booking['passengers'] ?? 1;
+                            $status = $booking['status'] ?? 'confirmed';
+                        ?>
                         <div class="booking-card">
                             <div class="booking-header">
-                                <div class="booking-id">Booking ID: <?= htmlspecialchars($booking['id']) ?></div>
-                                <div class="booking-status status-<?= htmlspecialchars($booking['status']) ?>">
-                                    <?= htmlspecialchars($booking['status']) ?>
+                                <div class="booking-id">Booking ID: <?= htmlspecialchars($id) ?></div>
+                                <div class="booking-status status-<?= htmlspecialchars($status) ?>">
+                                    <?= ucfirst(htmlspecialchars($status)) ?>
                                 </div>
                             </div>
                             
                             <div class="booking-route">
                                 <div class="route-location">
-                                    <div class="city"><?= htmlspecialchars($booking['from']) ?></div>
-                                    <div class="time"><?= htmlspecialchars($booking['departure_time']) ?></div>
+                                    <div class="city"><?= htmlspecialchars($from) ?></div>
+                                    <div class="time"><?= htmlspecialchars($departure_time) ?></div>
                                 </div>
                                 <div class="route-arrow">
                                     <i class="fas fa-arrow-right"></i>
                                 </div>
                                 <div class="route-location">
-                                    <div class="city"><?= htmlspecialchars($booking['to']) ?></div>
-                                    <div class="time"><?= htmlspecialchars($booking['arrival_time'] ?? 'N/A') ?></div>
+                                    <div class="city"><?= htmlspecialchars($to) ?></div>
+                                    <div class="time"><?= htmlspecialchars($arrival_time) ?></div>
                                 </div>
                             </div>
                             
                             <div class="booking-details">
                                 <div class="detail-item">
                                     <i class="fas fa-calendar"></i>
-                                    <span><?= date('M j, Y', strtotime($booking['departure_date'])) ?></span>
+                                    <span><?= date('M j, Y', strtotime($departure_date)) ?></span>
                                 </div>
                                 <div class="detail-item">
                                     <i class="fas fa-users"></i>
-                                    <span><?= $booking['passengers'] ?> Passenger<?= $booking['passengers'] > 1 ? 's' : '' ?></span>
+                                    <span><?= $passengers ?> Passenger<?= $passengers > 1 ? 's' : '' ?></span>
                                 </div>
                                 <div class="detail-item">
                                     <i class="fas fa-bus"></i>
-                                    <span><?= htmlspecialchars($booking['bus_type']) ?></span>
+                                    <span><?= htmlspecialchars($bus_type) ?></span>
                                 </div>
                                 <div class="detail-item">
                                     <i class="fas fa-rupee-sign"></i>
-                                    <span>₹<?= number_format($booking['price']) ?></span>
+                                    <span>₹<?= number_format($price) ?></span>
                                 </div>
-                                <?php if (!empty($booking['passenger_name'])): ?>
+                                <?php 
+                                $passengerName = $booking['passenger_name'] ?? '';
+                                if (!empty($passengerName)): 
+                                ?>
                                 <div class="detail-item">
                                     <i class="fas fa-user"></i>
-                                    <span><?= htmlspecialchars($booking['passenger_name']) ?></span>
+                                    <span><?= htmlspecialchars($passengerName) ?></span>
                                 </div>
                                 <?php endif; ?>
-                                <?php if (!empty($booking['seat_numbers'])): ?>
+                                <?php 
+                                $seatNumbers = $booking['seat_numbers'] ?? '';
+                                if (!empty($seatNumbers)): 
+                                ?>
                                 <div class="detail-item">
                                     <i class="fas fa-chair"></i>
-                                    <span>Seat: <?= htmlspecialchars($booking['seat_numbers']) ?></span>
+                                    <span>Seat: <?= htmlspecialchars($seatNumbers) ?></span>
                                 </div>
                                 <?php endif; ?>
                             </div>
                             
                             <div class="booking-actions">
-                                <button class="btn btn-primary" onclick="viewBookingDetails('<?= htmlspecialchars($booking['id']) ?>')">
+                                <button class="btn btn-primary" onclick="viewBookingDetails('<?= htmlspecialchars($id) ?>')">
                                     <i class="fas fa-eye"></i> View Details
                                 </button>
-                                <button class="btn btn-secondary" onclick="downloadTicket('<?= htmlspecialchars($booking['id']) ?>')">
+                                <button class="btn btn-secondary" onclick="downloadTicket('<?= htmlspecialchars($id) ?>')">
                                     <i class="fas fa-download"></i> Download Ticket
                                 </button>
-                                <?php if ($booking['status'] === 'confirmed'): ?>
+                                <?php if ($status === 'confirmed'): ?>
                                     <button class="btn btn-danger" onclick="cancelBooking(<?= $index ?>)">
                                         <i class="fas fa-times"></i> Cancel
                                     </button>

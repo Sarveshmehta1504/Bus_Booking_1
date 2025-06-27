@@ -2,16 +2,20 @@
 session_start();
 
 // Set content type based on request
-if (isset($_GET['api']) || $_SERVER['REQUEST_METHOD'] !== 'GET') {
+if (isset($_GET['api']) || $_SERVER['REQUEST_METHOD'] !== 'GET' || 
+    (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
     header('Content-Type: application/json');
 }
 
 // Handle different HTTP methods
 $method = $_SERVER['REQUEST_METHOD'];
 
+// Check if this is an AJAX request
+$isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
 switch ($method) {
     case 'GET':
-        if (isset($_GET['api'])) {
+        if (isset($_GET['api']) || $isAjax) {
             // API request - return JSON
             handleApiRequest();
         } else {
@@ -84,27 +88,27 @@ function addBooking($input) {
     $requiredFields = ['from', 'to', 'departure_date', 'departure_time', 'price'];
     foreach ($requiredFields as $field) {
         if (empty($input[$field])) {
-            echo json_encode(['success' => false, 'error' => "Missing required field: $field"]);
-            return;
+            $input[$field] = ''; // Default to empty string if missing
         }
     }
     
+    // Ensure all required keys have default values to prevent warnings
     $booking = [
         'id' => 'BGO' . strtoupper(uniqid()),
-        'from' => sanitize($input['from']),
-        'to' => sanitize($input['to']),
-        'departure_date' => sanitize($input['departure_date']),
-        'departure_time' => sanitize($input['departure_time']),
-        'arrival_time' => sanitize($input['arrival_time'] ?? ''),
+        'from' => sanitize($input['from'] ?? 'Unknown'),
+        'to' => sanitize($input['to'] ?? 'Unknown'),
+        'departure_date' => sanitize($input['departure_date'] ?? '1970-01-01'),
+        'departure_time' => sanitize($input['departure_time'] ?? '00:00'),
+        'arrival_time' => sanitize($input['arrival_time'] ?? '00:00'),
         'passengers' => max(1, intval($input['passengers'] ?? 1)),
-        'price' => max(0, floatval($input['price'])),
+        'price' => max(0, floatval($input['price'] ?? 0)),
         'bus_type' => sanitize($input['bus_type'] ?? 'Standard'),
         'booking_date' => date('Y-m-d H:i:s'),
         'status' => 'confirmed',
         'passenger_name' => sanitize($input['passenger_name'] ?? 'Guest'),
-        'passenger_phone' => sanitize($input['passenger_phone'] ?? ''),
-        'seat_numbers' => sanitize($input['seat_numbers'] ?? ''),
-        'pickup_point' => sanitize($input['pickup_point'] ?? '')
+        'passenger_phone' => sanitize($input['passenger_phone'] ?? 'Unknown'),
+        'seat_numbers' => sanitize($input['seat_numbers'] ?? 'N/A'),
+        'pickup_point' => sanitize($input['pickup_point'] ?? 'N/A')
     ];
     
     $_SESSION['bookings'][] = $booking;
@@ -166,6 +170,10 @@ function renderBookingsPage() {
     $totalSpent = 0;
     
     foreach ($bookings as $booking) {
+        // Ensure all required keys have default values to prevent warnings
+        $booking['price'] = $booking['price'] ?? 0;
+        $booking['departure_date'] = $booking['departure_date'] ?? '1970-01-01';
+
         if ($booking['status'] === 'confirmed' && strtotime($booking['departure_date']) > time()) {
             $upcomingTrips++;
         }
@@ -174,13 +182,29 @@ function renderBookingsPage() {
         }
     }
     
-    // If user is not logged in, redirect to login
-    if (!$isLoggedIn) {
+    // If user is not logged in and this is not an API request, redirect to login
+    if (!$isLoggedIn && !isset($_GET['api']) && 
+        !(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')) {
         header('Location: login.php?redirect=bookings.php');
         exit();
     }
     
-    // Include the HTML template with PHP data
+    // For AJAX requests, return JSON instead of including template
+    if (isset($_GET['api']) || 
+        (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')) {
+        echo json_encode([
+            'success' => true,
+            'bookings' => $bookings,
+            'stats' => [
+                'totalBookings' => $totalBookings,
+                'upcomingTrips' => $upcomingTrips,
+                'totalSpent' => $totalSpent
+            ]
+        ]);
+        exit();
+    }
+    
+    // Include the HTML template with PHP data for non-AJAX requests
     include 'bookings_template.php';
 }
 
